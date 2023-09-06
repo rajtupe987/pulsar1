@@ -18,6 +18,9 @@ from django.conf import settings
 
 from .serializers import  EnrollmentSerializer,AssignmentSerializer
 # this is for checking user is admin or not
+def favicon_view(request):
+    return HttpResponse(status=204)
+
 
 # just basic checking route
 def welcome_path(request):

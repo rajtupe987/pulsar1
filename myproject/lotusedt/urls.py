@@ -3,6 +3,7 @@ from . import views
 from .views import register,login,varifyintructor,create_expertise,get_all_expertise,create_department,create_course,update_course,delete_course,get_departments_with_courses,get_all_courses,get_all_instructors,enroll_student,get_course_details
 
 urlpatterns = [
+    path('favicon.ico', views.favicon_view),
     path("",views.welcome_path,name="welcome"),
     path('register', register, name='register'),
     path('login', login, name='login'),
