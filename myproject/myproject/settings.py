@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure--*c!jztphem8l@)q3=fd=m_qcawv^rdzfbsx_z^@@47her#1by
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost','.vercel.app']
+ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -65,8 +65,6 @@ REST_FRAMEWORK = {
 }
 
 
-
-
 ROOT_URLCONF = 'myproject.urls'
 
 TEMPLATES = [
@@ -94,18 +92,26 @@ CORS_ALLOWED_ORIGINS = [
 ]
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
+from decouple import config
+
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'lotusescool',
-        'USER': 'root',
-        'PASSWORD': 'Diljit@987',
+        'NAME': config('DB_NAME'),
+        'USER': config('DB_USER'),
+        'PASSWORD': config('DB_PASSWORD'),
         'HOST': 'localhost',  # Change if your database is on a different host
         'PORT': '3306',       # Default MySQL port
     }
 }
 
+# from decouple import config
+
+# SECRET_KEY = config('SECRET_KEY')
+# DB_NAME = config('DB_NAME')
+# DB_USER = config('DB_USER')
+# DB_PASSWORD = config('DB_PASSWORD')
 
 
 
@@ -142,11 +148,9 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
-import os
-import myproject
 
-STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_URL = 'static/'
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 

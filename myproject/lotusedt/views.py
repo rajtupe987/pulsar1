@@ -11,6 +11,7 @@ from rest_framework.decorators import api_view
 from .models import StudentModel,Expertise,Course
 from django.contrib.auth.decorators import user_passes_test
 from django.core.exceptions import PermissionDenied
+from decouple import config
 
 # Create your views here.
 
@@ -18,9 +19,6 @@ from django.conf import settings
 
 from .serializers import  EnrollmentSerializer,AssignmentSerializer
 # this is for checking user is admin or not
-def favicon_view(request):
-    return HttpResponse(status=204)
-
 
 # just basic checking route
 def welcome_path(request):
@@ -105,9 +103,9 @@ def login(request):
            
            
            
-            secret_key = "rajtupe987"  # Replace with your actual secret key
-            token = jwt.encode(payload, secret_key, algorithm='HS256').decode('utf-8')  # Decode the bytes to string
-            refresh_token = jwt.encode(refresh_token_payload, secret_key, algorithm='HS256').decode('utf-8')
+             # Replace with your actual secret key
+            token = jwt.encode(payload, config('SECRET_KEY'), algorithm='HS256').decode('utf-8')  # Decode the bytes to string
+            refresh_token = jwt.encode(refresh_token_payload,config('SECRET_KEY'), algorithm='HS256').decode('utf-8')
 
             response = {
                 "ok": True,
@@ -255,8 +253,8 @@ def varifyintructor(request):
             payload = {"instructorId": user.id,"instructorName": user.first_name,
                        "exp": expiration_time}
             
-            secret_key = "lotusschoole"  # Replace with your actual secret key
-            token = jwt.encode(payload, secret_key, algorithm='HS256').decode('utf-8')  # Decode the bytes to string
+            # Replace with your actual secret key
+            token = jwt.encode(payload, config('SECRET_KEY_Intructor'), algorithm='HS256').decode('utf-8')  # Decode the bytes to string
 
             response = {
                 "ok": True,
@@ -469,3 +467,55 @@ def get_all_courses(request):
 
     return Response(response_data, status=status.HTTP_200_OK)
 
+
+
+
+
+
+
+from rest_framework import views, status
+from rest_framework.response import Response
+import requests
+
+import requests
+import json
+
+class ChatbotView(views.APIView):
+    def post(self, request):
+        user_message = request.data.get('message')
+
+        gpt_api_key = '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'  # Replace with your GPT-3 API key
+        gpt3_url = 'https://api.openai.com/v1/engines/davinci/completions'
+
+        headers = {
+            'Authorization': f'Bearer {gpt_api_key}',
+        }
+
+        # Provide a clear instruction to GPT-3
+        instruction = "The Lotus School website is an educational management platform built using Django, a popular Python web framework. This platform is designed to manage various aspects of a school, including students, instructors, departments, courses, enrollments, assignments, submissions, and announcements. It provides a comprehensive solution for administrators, teachers, and students to interact with the school's data and services."
+
+        # Combine the instruction and user's message
+        prompt = f"{instruction} On the basis of this only answer this: {user_message} otherwise just say i can not answer any irrelevent quations"
+
+        data = {
+            'prompt': prompt,
+            'max_tokens': 50,
+        }
+
+        try:
+            # Log the request data
+            print(f"Request to GPT-3: {json.dumps(data)}")
+
+            response = requests.post(gpt3_url, headers=headers, json=data)
+
+            # Log the GPT-3 response
+            print(f"Response from GPT-3: {response.text}")
+
+            if response.status_code == 200:
+                chatbot_response = response.json().get('choices')[0].get('text')
+                return Response({'response': chatbot_response}, status=status.HTTP_200_OK)
+            else:
+                return Response({'error': 'Chatbot request failed'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        except Exception as e:
+            print(f"Error: {str(e)}")
+            return Response({'error': 'Chatbot request failed'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
